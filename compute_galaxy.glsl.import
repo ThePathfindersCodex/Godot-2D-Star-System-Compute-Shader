@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://degjt753kl35y"
+path="res://.godot/imported/compute_galaxy.glsl-98c7f83940b91055c074cda4ee39d3e8.res"
+
+[deps]
+
+source_file="res://compute_galaxy.glsl"
+dest_files=["res://.godot/imported/compute_galaxy.glsl-98c7f83940b91055c074cda4ee39d3e8.res"]
+
+[params]
+
