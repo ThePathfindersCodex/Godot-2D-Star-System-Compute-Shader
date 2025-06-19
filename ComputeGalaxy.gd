@@ -64,7 +64,7 @@ func _ready():
 	randomize()
 	
 	# set speed
-	%HSliderTimeScale.value = 20  # hardcode start max: 20==max starting speed tick in slider
+	%HSliderTimeScale.value = 2  # hardcode start max: 20==max starting speed tick in slider
 	dt = scale_map_speed(%HSliderTimeScale.value)
 	
 	# perflog init

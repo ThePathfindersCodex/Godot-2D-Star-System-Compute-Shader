@@ -35,10 +35,6 @@ layout(set = 0, binding = 5, std430) restrict buffer OutMassBuffer {
 
 layout(set = 0, binding = 6, rgba32f) uniform image2D OUTPUT_TEXTURE;
 
-//layout(set = 0, binding = 7, std430) restrict buffer CountersBuffer {
-//	int data[];
-//} counters_buffer;
-
 layout(push_constant, std430) uniform Params {
 	float run_mode;
 	float G;
@@ -68,11 +64,7 @@ void draw_circle(vec2 center, float radius, vec4 color) {
 void run_sim() {
 	uint pos = gl_GlobalInvocationID.x;
 	bool is_center = (pos == 0);
-	if (pos > params.point_count)
-	{
-		//atomicAdd(counters_buffer.data[0], 1); // INDEX 0 - empty mass counter
-		return;
-	}	
+	if (pos > params.point_count) return;	
 
 	// Current object's position, velocity, and mass
 	vec2 my_pos = in_pos_buffer.data[pos].v.xy;
@@ -80,10 +72,7 @@ void run_sim() {
 	float my_mass = in_mass_buffer.data[pos];
 
 	// Skip if the object has no mass (has been merged)
-	if (abs(my_mass) < 0.00001) {
-		//atomicAdd(counters_buffer.data[0], 1); // INDEX 0 - empty mass counter
-		return;
-	}
+	if (abs(my_mass) < 0.00001) return;
 
 	out_pos_data_buffer.data[pos].v.xy = my_pos;
 	out_vel_data_buffer.data[pos].v.xy = my_vel;
@@ -133,7 +122,6 @@ void run_sim() {
 						// Zero out the smaller object
 						out_mass_data_buffer.data[smallerObj] = 0.0;
 						out_vel_data_buffer.data[smallerObj].v = vec2(0.0, 0.0);
-						//atomicAdd(counters_buffer.data[0], 1); // INDEX 0 - empty mass counter
 
 						// Early exit if this object has been merged
 						if (smallerObj == pos) return;
@@ -186,13 +174,9 @@ float zoom_value_max = 2048.0;
 void draw_texture() {
     uint pos = gl_GlobalInvocationID.x;
     bool is_center = (pos == 0);
-	if (pos > params.point_count-1)
-	{
-		return;
-	}	
+	if (pos > params.point_count-1) return;	
 	
     vec2 my_pos = in_pos_buffer.data[pos].v.xy;
-	
     float my_mass = in_mass_buffer.data[pos];
 	
     vec2 new_pos = out_pos_data_buffer.data[pos].v.xy;
@@ -206,12 +190,8 @@ void draw_texture() {
     vec2 scaled_my_pos = (my_pos * zoom_out_factor) + ((vec2(zoom_value_max, zoom_value_max) * 0.5) * (1.0 - zoom_out_factor));
 	vec2 scaled_new_pos = (new_pos * zoom_out_factor) + ((vec2(zoom_value_max, zoom_value_max) * 0.5) * (1.0 - zoom_out_factor));
 
-	if (scaled_my_pos.x < zoom_value_min || scaled_my_pos.x > zoom_value_max) {
-		return;
-	} 
-	if (scaled_my_pos.y < zoom_value_min || scaled_my_pos.y > zoom_value_max) {
-		return;
-	}
+	if (scaled_my_pos.x < zoom_value_min || scaled_my_pos.x > zoom_value_max) return;
+	if (scaled_my_pos.y < zoom_value_min || scaled_my_pos.y > zoom_value_max) return;
 	
     // Erase previous circle if mass was present
     if (new_mass > 0.0) {
